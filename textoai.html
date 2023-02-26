@@ -1,0 +1,52 @@
+<!-- TEXTOAI HTML -->
+<!DOCTYPE html>
+<html>
+
+<head>
+  <title>OpenAI TextoAI</title>
+</head>
+
+<body>
+  <textarea id="input-text"></textarea>
+  <br>
+  <button onclick="openai_test()">Write a text about</button>
+  <br>
+  <div id="openai-response"></div>
+
+  <script>
+    async function openai_test() {
+      var prompt_text = "write an text of 500 characters about " + document.getElementById("input-text").value;
+
+      var url = "https://api.openai.com/v1/engines/text-davinci-002/completions";
+
+      var xhr = new XMLHttpRequest();
+      xhr.open("POST", url);
+
+      xhr.setRequestHeader("Content-Type", "application/json");
+      xhr.setRequestHeader("Authorization", "Bearer YOUROPENAIKEYHERE");
+
+      xhr.onreadystatechange = function () {
+        if (xhr.readyState === 4) {
+          var jsonResponse = JSON.parse(xhr.responseText);
+          var openai_output = jsonResponse.choices[0].text;
+          var start = openai_output.indexOf("\n\n") + 2;
+          var filtered_output = openai_output.substring(start);
+          document.getElementById("openai-response").innerHTML = filtered_output;
+        }
+      };
+
+      var data = `{
+          "prompt": "${prompt_text}",
+          "temperature": 0.7,
+          "max_tokens": 500,
+          "top_p": 1,
+          "frequency_penalty": 0.75,
+          "presence_penalty": 0
+        }`;
+
+      xhr.send(data);
+    }
+  </script>
+</body>
+
+</html>
